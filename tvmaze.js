@@ -56,6 +56,7 @@ function populateShows(shows) {
            }>
              <h5 class="card-title">${show.name}</h5>
              <p class="card-text">${show.summary}</p>
+             <button class="episodes-btn">Episodes</button>
            </div>
          </div>
        </div>
@@ -63,6 +64,8 @@ function populateShows(shows) {
     )
 
     $showsList.append($item)
+    const episodesBtn = document.querySelector('.episodes-btn')
+    episodesBtn.addEventListener('click', getEpisodes(show.id))
   }
 }
 
@@ -89,6 +92,10 @@ $('#search-form').on('submit', async function handleSearch(evt) {
  */
 
 async function getEpisodes(id) {
+  const res = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`)
+  // console.log(`getEpisodes: ${res.data[0]}`)
+  console.log(res.data)
+  // const showData = res.data[0].show
   // TODO: get episodes from tvmaze
   //       you can get this by making GET request to
   //       http://api.tvmaze.com/shows/SHOW-ID-HERE/episodes

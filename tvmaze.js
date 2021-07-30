@@ -65,7 +65,10 @@ function populateShows(shows) {
 
     $showsList.append($item)
     const episodesBtn = document.querySelector('.episodes-btn')
-    episodesBtn.addEventListener('click', getEpisodes(show.id))
+    episodesBtn.addEventListener('click', function () {
+      const eps = getEpisodes(show.id)
+      populateEpisodes(eps)
+    })
   }
 }
 
@@ -94,10 +97,26 @@ $('#search-form').on('submit', async function handleSearch(evt) {
 async function getEpisodes(id) {
   const res = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`)
   // console.log(`getEpisodes: ${res.data[0]}`)
-  console.log(res.data)
+  // console.log(res.data[0].name)
+  return [res.data]
   // const showData = res.data[0].show
   // TODO: get episodes from tvmaze
   //       you can get this by making GET request to
   //       http://api.tvmaze.com/shows/SHOW-ID-HERE/episodes
   // TODO: return array-of-episode-info, as described in docstring above
+}
+
+async function populateEpisodes(episodes) {
+  const epList = await episodes
+  console.log(epList)
+  const episodesList = document.querySelectorAll('#episodes-list')
+  episodesList.innerHtml = ''
+
+  for (let episode of epList) {
+    let $item = $(
+      `<li class="col-md-6 col-lg-3 Show" data-show-id="${episode.name} (Season: ${episode.season}, Number: ${episode.number})"></li>`,
+    )
+    // document.querySelector('#episodes-area').style('display', 'show')
+    episodesList.appendChild($item)
+  }
 }

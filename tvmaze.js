@@ -17,8 +17,6 @@
       }
  */
 async function searchShows(query) {
-  // TODO: Make an ajax request to the searchShows api.  Remove
-  // hard coded data.
   const params = {
     params: {
       q: query,
@@ -56,6 +54,7 @@ function populateShows(shows) {
            }>
              <h5 class="card-title">${show.name}</h5>
              <p class="card-text">${show.summary}</p>
+             <button class="episodes-btn">Episodes</button>
            </div>
          </div>
        </div>
@@ -63,6 +62,12 @@ function populateShows(shows) {
     )
 
     $showsList.append($item)
+    const episodesBtn = document.querySelector('.episodes-btn')
+    episodesBtn.addEventListener('click', function () {
+      const eps = getEpisodes(show.id)
+
+      populateEpisodes(eps)
+    })
   }
 }
 
@@ -70,7 +75,6 @@ function populateShows(shows) {
  *    - hide episodes area
  *    - get list of matching shows and show in shows list
  */
-
 $('#search-form').on('submit', async function handleSearch(evt) {
   evt.preventDefault()
 
@@ -80,17 +84,27 @@ $('#search-form').on('submit', async function handleSearch(evt) {
   $('#episodes-area').hide()
 
   let shows = await searchShows(query)
-
+  document.querySelector('#episodes-list').innerHTML = ''
+  document.querySelector('form').reset()
   populateShows(shows)
 })
 
 /** Given a show ID, return list of episodes:
  *      { id, name, season, number }
  */
-
 async function getEpisodes(id) {
-  // TODO: get episodes from tvmaze
-  //       you can get this by making GET request to
-  //       http://api.tvmaze.com/shows/SHOW-ID-HERE/episodes
-  // TODO: return array-of-episode-info, as described in docstring above
+  const res = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`)
+  return [res.data]
+}
+
+async function populateEpisodes(episodes) {
+  const epList = await episodes
+  const episodesList = document.querySelector('#episodes-list')
+  document.querySelector('#episodes-area').style.display = 'block'
+  for (let episode of epList[0]) {
+    const epLi = document.createElement('li')
+    epLi.innerHTML = `${episode.name} (Season: ${episode.season}, Number: ${episode.number})`
+    console.log(epLi)
+    episodesList.appendChild(epLi)
+  }
 }

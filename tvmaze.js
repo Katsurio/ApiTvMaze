@@ -17,8 +17,6 @@
       }
  */
 async function searchShows(query) {
-  // TODO: Make an ajax request to the searchShows api.  Remove
-  // hard coded data.
   const params = {
     params: {
       q: query,
@@ -67,6 +65,7 @@ function populateShows(shows) {
     const episodesBtn = document.querySelector('.episodes-btn')
     episodesBtn.addEventListener('click', function () {
       const eps = getEpisodes(show.id)
+
       populateEpisodes(eps)
     })
   }
@@ -76,7 +75,6 @@ function populateShows(shows) {
  *    - hide episodes area
  *    - get list of matching shows and show in shows list
  */
-
 $('#search-form').on('submit', async function handleSearch(evt) {
   evt.preventDefault()
 
@@ -86,37 +84,27 @@ $('#search-form').on('submit', async function handleSearch(evt) {
   $('#episodes-area').hide()
 
   let shows = await searchShows(query)
-
+  document.querySelector('#episodes-list').innerHTML = ''
+  document.querySelector('form').reset()
   populateShows(shows)
 })
 
 /** Given a show ID, return list of episodes:
  *      { id, name, season, number }
  */
-
 async function getEpisodes(id) {
   const res = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`)
-  // console.log(`getEpisodes: ${res.data[0]}`)
-  // console.log(res.data[0].name)
   return [res.data]
-  // const showData = res.data[0].show
-  // TODO: get episodes from tvmaze
-  //       you can get this by making GET request to
-  //       http://api.tvmaze.com/shows/SHOW-ID-HERE/episodes
-  // TODO: return array-of-episode-info, as described in docstring above
 }
 
 async function populateEpisodes(episodes) {
   const epList = await episodes
-  console.log(epList)
-  const episodesList = document.querySelectorAll('#episodes-list')
-  episodesList.innerHtml = ''
-
-  for (let episode of epList) {
-    let $item = $(
-      `<li class="col-md-6 col-lg-3 Show" data-show-id="${episode.name} (Season: ${episode.season}, Number: ${episode.number})"></li>`,
-    )
-    // document.querySelector('#episodes-area').style('display', 'show')
-    episodesList.appendChild($item)
+  const episodesList = document.querySelector('#episodes-list')
+  document.querySelector('#episodes-area').style.display = 'block'
+  for (let episode of epList[0]) {
+    const epLi = document.createElement('li')
+    epLi.innerHTML = `${episode.name} (Season: ${episode.season}, Number: ${episode.number})`
+    console.log(epLi)
+    episodesList.appendChild(epLi)
   }
 }
